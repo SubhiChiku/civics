@@ -39,7 +39,7 @@ async def start(_, m: Message):
             keyboard = InlineKeyboardMarkup(
                 [
                     [
-                        InlineKeyboardButton("➕ Add me to your Chat ➕", url="https://t.me/free_request_accepting_bot?startgroup=true")
+                        InlineKeyboardButton("➕ Add me to your Chat ➕", url="https://t.me/free_request_accepting_bot?startgroup=true") , InlineKeyboardButton("➕ Add me to your Channel ➕", url="https://t.me/free_request_accepting_bot?startchannel=true")
                     ]
                 ]
             )
