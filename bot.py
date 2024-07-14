@@ -52,7 +52,7 @@ async def start(client, m: Message):
             )
             add_user(m.from_user.id)
             await m.reply_text(
-                f"**🦊 Hello {m.from_user.mention}!\nI'm an auto-approve Admin Join Requests Bot.\nI can approve users in Groups/Channels. Add me to your chat and promote me to admin with add members permission.**",
+                f"**🦊 Hello {m.from_user.mention}! baby\nI'm an auto-approve Admin Join Requests Bot.\nI can approve users in Groups/Channels. Add me to your chat and promote me to admin with add members permission.**",
                 reply_markup=keyboard
             )
         elif m.chat.type in (enums.ChatType.GROUP, enums.ChatType.SUPERGROUP):
@@ -88,7 +88,7 @@ async def chk(client, cb: CallbackQuery):
             )
             add_user(cb.from_user.id)
             await cb.message.edit(
-                f"**🦊 Hello {cb.from_user.mention}!\nI'm an auto-approve Admin Join Requests Bot.\nI can approve users in Groups/Channels. Add me to your chat and promote me to admin with add members permission.**",
+                f"**🦊 Hello {cb.from_user.mention}!baby\nI'm an auto-approve Admin Join Requests Bot.\nI can approve users in Groups/Channels. Add me to your chat and promote me to admin with add members permission.**",
                 reply_markup=keyboard,
                 disable_web_page_preview=True
             )
