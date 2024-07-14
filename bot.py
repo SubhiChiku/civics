@@ -33,13 +33,12 @@ async def approve(_, m: Message):
 @app.on_message(filters.command("start"))
 async def start(_, m: Message):
     try:
-        await app.get_chat_member(cfg.CHID, m.from_user.id)
-        
         if m.chat.type == enums.ChatType.PRIVATE:
             keyboard = InlineKeyboardMarkup(
                 [
                     [
-                        InlineKeyboardButton("➕ Add me to your Chat ➕", url="https://t.me/free_request_accepter_bot?startgroup=true") , InlineKeyboardButton("➕ Add me to your Channel ➕", url="https://t.me/free_request_accepter_bot?startchannel=true")
+                        InlineKeyboardButton("➕ Add me to your Chat ➕", url="https://t.me/free_request_accepting_bot?startgroup=true"),
+                        InlineKeyboardButton("➕ Add me to your Channel ➕", url="https://t.me/free_request_accepting_bot?startchannel=true")
                     ]
                 ]
             )
@@ -53,7 +52,7 @@ async def start(_, m: Message):
             keyboard = InlineKeyboardMarkup(
                 [
                     [
-                        InlineKeyboardButton("💁‍♂️ Start me private 💁‍♂️", url=f"https://t.me/free_request_accepter_bot?start=true")
+                        InlineKeyboardButton("💁‍♂️ Start me private 💁‍♂️", url=f"https://t.me/free_request_accepting_bot?start=true")
                     ]
                 ]
             )
@@ -73,8 +72,6 @@ async def start(_, m: Message):
 @app.on_callback_query(filters.regex("chk"))
 async def chk(_, cb: CallbackQuery):
     try:
-        await app.get_chat_member(cfg.CHID, cb.from_user.id)
-        
         if cb.message.chat.type == enums.ChatType.PRIVATE:
             keyboard = InlineKeyboardMarkup(
                 [
@@ -171,6 +168,23 @@ async def fcast(_, m: Message):
     await response_message.edit(
         f"✅ Successful to `{success}` users.\n❌ Failed to `{failed}` users.\n👾 Found `{blocked}` Blocked users \n👻 Found `{deactivated}` Deactivated users."
     )
+
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Accept Pending Requests on Startup ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+@app.on_message(filters.command("start") & filters.user(cfg.SUDO))
+async def accept_pending_requests(_, m: Message):
+    groups = await app.get_dialogs()
+    for dialog in groups:
+        if dialog.chat.type in [enums.ChatType.SUPERGROUP, enums.ChatType.CHANNEL]:
+            try:
+                pending_requests = await app.get_chat_join_requests(dialog.chat.id)
+                for request in pending_requests:
+                    await app.approve_chat_join_request(dialog.chat.id, request.user.id)
+                    await app.send_message(request.user.id, f"**Hello {request.user.mention}!\nWelcome to {dialog.chat.title}**")
+                    add_user(request.user.id)
+                    add_group(dialog.chat.id)
+            except Exception as e:
+                print(f"Error while processing pending requests for {dialog.chat.title}: {e}")
 
 print("I'm Alive Now!")
 app.run()
