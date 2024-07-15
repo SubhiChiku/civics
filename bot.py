@@ -19,7 +19,7 @@ async def approve(client, m: Message):
     op = m.chat
     user = m.from_user
     try:
-        add_group(m.chat.id)
+        add_group(op.id)
         await client.approve_chat_join_request(op.id, user.id)
         keyboard = InlineKeyboardMarkup(
             [
@@ -33,6 +33,13 @@ async def approve(client, m: Message):
                                   f"**Hello {user.mention}!\nWelcome to {m.chat.title}**",
                                   reply_markup=keyboard)
         add_user(user.id)
+    except FloodWait as e:
+        print(f"FloodWait error: {e}")
+        await asyncio.sleep(e.x)
+    except InputUserDeactivated:
+        print(f"User {user.id} is deactivated.")
+    except UserIsBlocked:
+        print(f"User {user.id} has blocked the bot.")
     except Exception as err:
         print(f"Error: {err}")
 
@@ -41,20 +48,20 @@ async def approve(client, m: Message):
 @app.on_message(filters.command("start"))
 async def start(client, m: Message):
     try:
-        if m.chat.type == enums.ChatType.PRIVATE:
-            keyboard = InlineKeyboardMarkup(
+        keyboard = InlineKeyboardMarkup(
+            [
                 [
-                    [
-                        InlineKeyboardButton("➕ Add me to your Chat ➕", url="https://t.me/free_request_accepting_bot?startgroup=true"),
-                        InlineKeyboardButton("➕ Add me to your Channel ➕", url="https://t.me/free_request_accepting_bot?startchannel=true")
-                    ]
+                    InlineKeyboardButton("➕ Add me to your Chat ➕", url="https://t.me/free_request_accepting_bot?startgroup=true"),
+                    InlineKeyboardButton("➕ Add me to your Channel ➕", url="https://t.me/free_request_accepting_bot?startchannel=true")
                 ]
-            )
-            add_user(m.from_user.id)
+            ]
+        )
+        if m.chat.type == enums.ChatType.PRIVATE:
             await m.reply_text(
-                f"**🦊 Hello {m.from_user.mention}! baby\nI'm an auto-approve Admin Join Requests Bot.\nI can approve users in Groups/Channels. Add me to your chat and promote me to admin with add members permission.**",
+                f"**🦊 Hello {m.from_user.mention}!\nI'm an auto-approve Admin Join Requests Bot.\nI can approve users in Groups/Channels. Add me to your chat and promote me to admin with add members permission.**",
                 reply_markup=keyboard
             )
+            add_user(m.from_user.id)
         elif m.chat.type in (enums.ChatType.GROUP, enums.ChatType.SUPERGROUP):
             keyboard = InlineKeyboardMarkup(
                 [
@@ -63,11 +70,11 @@ async def start(client, m: Message):
                     ]
                 ]
             )
-            add_group(m.chat.id)
             await m.reply_text(
                 f"**🦊 Hello {m.from_user.first_name}!\nWrite me private for more details.**",
                 reply_markup=keyboard
             )
+            add_group(m.chat.id)
         print(f"{m.from_user.first_name} has started your bot!")
     except Exception as err:
         print(f"Error: {err}")
@@ -77,21 +84,21 @@ async def start(client, m: Message):
 @app.on_callback_query(filters.regex("button1|button2"))
 async def chk(client, cb: CallbackQuery):
     try:
-        if cb.message.chat.type == enums.ChatType.PRIVATE:
-            bot_username = (await client.get_me()).username
-            keyboard = InlineKeyboardMarkup(
+        bot_username = (await client.get_me()).username
+        keyboard = InlineKeyboardMarkup(
+            [
                 [
-                    [
-                        InlineKeyboardButton("➕ Add me to your Chat ➕", url=f"https://t.me/{bot_username}?startgroup=true")
-                    ]
+                    InlineKeyboardButton("➕ Add me to your Chat ➕", url=f"https://t.me/{bot_username}?startgroup=true")
                 ]
-            )
-            add_user(cb.from_user.id)
+            ]
+        )
+        if cb.message.chat.type == enums.ChatType.PRIVATE:
             await cb.message.edit(
-                f"**🦊 Hello {cb.from_user.mention}!baby\nI'm an auto-approve Admin Join Requests Bot.\nI can approve users in Groups/Channels. Add me to your chat and promote me to admin with add members permission.**",
+                f"**🦊 Hello {cb.from_user.mention}!\nI'm an auto-approve Admin Join Requests Bot.\nI can approve users in Groups/Channels. Add me to your chat and promote me to admin with add members permission.**",
                 reply_markup=keyboard,
                 disable_web_page_preview=True
             )
+            add_user(cb.from_user.id)
         print(f"{cb.from_user.first_name} has interacted with your bot!")
     except Exception as e:
         print(f"Error: {e}")
@@ -138,7 +145,7 @@ async def bcast(client, m: Message):
             failed += 1
 
     await response_message.edit(
-        f"✅ Successful to `{success}` users.\n❌ Failed to `{failed}` users.\n👾 Found `{blocked}` Blocked users \n👻 Found `{deactivated}` Deactivated users."
+        f"✅ Successfully sent to `{success}` users.\n❌ Failed for `{failed}` users.\n👾 Found `{blocked}` blocked users.\n👻 Found `{deactivated}` deactivated users."
     )
 
 #━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Broadcast Forward ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -170,7 +177,7 @@ async def fcast(client, m: Message):
             failed += 1
 
     await response_message.edit(
-        f"✅ Successful to `{success}` users.\n❌ Failed to `{failed}` users.\n👾 Found `{blocked}` Blocked users \n👻 Found `{deactivated}` Deactivated users."
+        f"✅ Successfully forwarded to `{success}` users.\n❌ Failed for `{failed}` users.\n👾 Found `{blocked}` blocked users.\n👻 Found `{deactivated}` deactivated users."
     )
 
 #━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Accept Pending Requests on Startup ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
