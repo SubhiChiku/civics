@@ -24,10 +24,10 @@ async def approve(client, m: Message):
         keyboard = InlineKeyboardMarkup(
             [
                 [
-                    InlineKeyboardButton("➕ Add me to your Chat ➕", url="https://t.me/free_request_accepting_bot?startgroup=true"), 
+                    InlineKeyboardButton("➕ Add me to your Chat ➕", url="https://t.me/free_request_accepter_bot?startgroup=true"), 
                 ],
                 [
-                    InlineKeyboardButton("➕ Add me to your Channel ➕", url="https://t.me/free_request_accepting_bot?startchannel=true")
+                    InlineKeyboardButton("➕ Add me to your Channel ➕", url="https://t.me/free_request_accepter_bot?startchannel=true")
                 ]
             ]
         )
@@ -53,10 +53,10 @@ async def start(client, m: Message):
         keyboard = InlineKeyboardMarkup(
             [
                 [
-                    InlineKeyboardButton("➕ Add me to your Chat ➕", url="https://t.me/free_request_accepting_bot?startgroup=true"),
+                    InlineKeyboardButton("➕ Add me to your Chat ➕", url="https://t.me/free_request_accepter_bot?startgroup=true"),
                 ],
                 [
-                    InlineKeyboardButton("➕ Add me to your Channel ➕", url="https://t.me/free_request_accepting_bot?startchannel=true")
+                    InlineKeyboardButton("➕ Add me to your Channel ➕", url="https://t.me/free_request_accepter_bot?startchannel=true")
                 ]
             ]
         )
@@ -70,7 +70,7 @@ async def start(client, m: Message):
             keyboard = InlineKeyboardMarkup(
                 [
                     [
-                        InlineKeyboardButton("💁‍♂️ Start me private 💁‍♂️", url="https://t.me/free_request_accepting_bot?start=true")
+                        InlineKeyboardButton("💁‍♂️ Start me private 💁‍♂️", url="https://t.me/free_request_accepter_bot?start=true")
                     ]
                 ]
             )
