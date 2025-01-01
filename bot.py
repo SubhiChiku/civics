@@ -124,33 +124,38 @@ async def dbtool(client, m: Message):
 
 @app.on_message(filters.command("bcast") & filters.user(cfg.SUDO))
 async def bcast(client, m: Message):
-    all_users_data = users
-    response_message = await m.reply_text("`⚡️ Processing...`")
-    success = 0
-    failed = 0
-    deactivated = 0
-    blocked = 0
-    
-    for user_record in all_users_data.find():
-        try:
-            user_id = user_record["user_id"]
-            await m.reply_to_message.copy(int(user_id))
-            success += 1
-        except FloodWait as ex:
-            await asyncio.sleep(ex.x)
-            await m.reply_to_message.copy(int(user_id))
-        except InputUserDeactivated:
-            deactivated += 1
-            remove_user(user_id)
-        except UserIsBlocked:
-            blocked += 1
-        except Exception as e:
-            print(f"Error: {e}")
-            failed += 1
+    try:
+        all_users_data = users.find()  # Ensure `users.find()` returns a valid iterable
+        response_message = await m.reply_text("`⚡️ Processing broadcast...`")
+        success, failed, deactivated, blocked = 0, 0, 0, 0
 
-    await response_message.edit(
-        f"✅ Successfully sent to `{success}` users.\n❌ Failed for `{failed}` users.\n👾 Found `{blocked}` blocked users.\n👻 Found `{deactivated}` deactivated users."
-    )
+        for user_record in all_users_data:
+            try:
+                user_id = int(user_record["user_id"])  # Ensure user_id is an integer
+                await m.reply_to_message.copy(user_id)
+                success += 1
+            except FloodWait as ex:
+                print(f"FloodWait: Waiting for {ex.x} seconds")
+                await asyncio.sleep(ex.x)
+            except InputUserDeactivated:
+                print(f"User {user_id} deactivated.")
+                deactivated += 1
+                remove_user(user_id)
+            except UserIsBlocked:
+                print(f"User {user_id} blocked the bot.")
+                blocked += 1
+            except Exception as e:
+                print(f"Broadcast failed for {user_id}: {e}")
+                failed += 1
+
+        await response_message.edit(
+            f"✅ Successfully sent to `{success}` users.\n"
+            f"❌ Failed for `{failed}` users.\n"
+            f"👾 Blocked: `{blocked}` users.\n"
+            f"👻 Deactivated: `{deactivated}` users."
+        )
+    except Exception as e:
+        await m.reply_text(f"Error in broadcast: {e}")
 
 #━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Broadcast Forward ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
