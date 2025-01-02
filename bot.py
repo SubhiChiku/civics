@@ -148,7 +148,7 @@ async def bcast(client, m: Message):
                 print(f"Broadcast failed for {user_id}: {e}")
                 failed += 1
 
-        await response_message.edit(@app.on_message(filters.command("bcast") & filters.user(cfg.SUDO))
+        await response_message.edit(@app.on_message(filters.command("bcast") & filters.user(cfg.SUDO)))
 async def bcast(client, m: Message):
     try:
      
