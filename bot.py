@@ -4,6 +4,7 @@ from pyrogram.errors import FloodWait, InputUserDeactivated, UserIsBlocked
 from database import add_user, add_group, all_users, all_groups, users, remove_user
 from configs import cfg
 import asyncio
+from telebot import TeleBot
 from bcast import send_broadcast_message
 app = Client(
     "approver",
