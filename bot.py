@@ -123,7 +123,7 @@ async def dbtool(client, m: Message):
 
 #━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Broadcast ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-@bot.message_handler(commands=['broadcast'])
+@app.message_handler(commands=['broadcast'])
 def handle_broadcast(message):
     message_text = message.text[11:]
     if message_text:
