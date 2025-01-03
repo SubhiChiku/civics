@@ -1,4 +1,5 @@
 from pyrogram import Client, filters
+from pyrogram.errors import UserAlreadyParticipant
 from database import all_users, all_groups
 from configs import cfg
 
@@ -18,6 +19,18 @@ def send_message_to_group(chat_id, message):
         return True
     except Exception as e:
         print(f"Failed to send to group {chat_id}: {e}")
+        return False
+
+def add_user_to_group(chat_id, user_id):
+    try:
+        bot.add_chat_members(chat_id, user_id)
+        print(f"User {user_id} added to group {chat_id}.")
+        return True
+    except UserAlreadyParticipant:
+        print(f"User {user_id} is already a participant of the group {chat_id}.")
+        return False
+    except Exception as e:
+        print(f"Failed to add user {user_id} to group {chat_id}: {e}")
         return False
 
 def broadcast_message(message):
