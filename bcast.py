@@ -2,9 +2,7 @@ from database import all_users, all_groups
 from configs import cfg
 from telebot import TeleBot
 
-app = Client(
-    "approver",
-    bot_token=cfg.BOT_TOKEN)
+app = TeleBot(cfg.BOT_TOKEN)
 
 def send_broadcast_message(message_text):
     """
