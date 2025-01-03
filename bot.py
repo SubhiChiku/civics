@@ -123,14 +123,23 @@ async def dbtool(client, m: Message):
 
 #━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Broadcast ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-@app.message_handler(commands=['broadcast'])
-def handle_broadcast(message):
-    message_text = message.text[11:]
-    if message_text:
-        send_broadcast_message(message_text)
-        bot.reply_to(message, "Broadcast message sent to all users and groups!")
-    else:
-        bot.reply_to(message, "Please provide a message to broadcast.")
-        
+@app.on_message(filters.command("broadcast") & filters.user(cfg.SUDO))
+async def broadcast(client, m: Message):
+    if len(m.command) < 2:
+        await m.reply("Please provide a message to broadcast.")
+        return
+
+    message_text = m.text.split(maxsplit=1)[1]
+    success = 0
+    fail = 0
+    for user_id in users():
+        try:
+            await client.send_message(user_id, message_text)
+            success += 1
+        except Exception:
+            fail += 1
+
+    await m.reply(f"Broadcast completed.\n\n✅ Success: {success}\n❌ Failures: {fail}")
+
 print("I'm Alive Now!")
 app.run()
