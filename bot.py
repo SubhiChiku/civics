@@ -4,7 +4,7 @@ from pyrogram.errors import FloodWait, InputUserDeactivated, UserIsBlocked
 from database import add_user, add_group, all_users, all_groups, users, remove_user
 from configs import cfg
 import asyncio
-
+from bcast import send_broadcast_message
 app = Client(
     "approver",
     api_id=cfg.API_ID,
