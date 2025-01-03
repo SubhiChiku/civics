@@ -122,54 +122,67 @@ async def dbtool(client, m: Message):
 
 #━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Broadcast ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Broadcast Forward ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-@app.on_message(filters.command("fcast") & filters.user(cfg.SUDO))
-async def fcast(client, m: Message):
-    all_users_data = users
-    response_message = await m.reply_text("`⚡️ Processing...`")
+@app.on_message(filters.command("bcast") & filters.user(cfg.SUDO))
+async def bcast(_, m : Message):
+    allusers = users
+    lel = await m.reply_text("`⚡️ Processing...`")
     success = 0
     failed = 0
     deactivated = 0
     blocked = 0
-    
-    for user_record in all_users_data.find():
+    for usrs in allusers.find():
         try:
-            user_id = user_record["user_id"]
-            await m.reply_to_message.forward(int(user_id))
-            success += 1
+            userid = usrs["user_id"]
+            #print(int(userid))
+            if m.command[0] == "bcast":
+                await m.reply_to_message.copy(int(userid))
+            success +=1
         except FloodWait as ex:
-            await asyncio.sleep(ex.x)
-            await m.reply_to_message.forward(int(user_id))
-        except InputUserDeactivated:
-            deactivated += 1
-            remove_user(user_id)
-        except UserIsBlocked:
-            blocked += 1
+            await asyncio.sleep(ex.value)
+            if m.command[0] == "bcast":
+                await m.reply_to_message.copy(int(userid))
+        except errors.InputUserDeactivated:
+            deactivated +=1
+            remove_user(userid)
+        except errors.UserIsBlocked:
+            blocked +=1
         except Exception as e:
-            print(f"Error: {e}")
-            failed += 1
+            print(e)
+            failed +=1
 
-    await response_message.edit(
-        f"✅ Successfully forwarded to `{success}` users.\n❌ Failed for `{failed}` users.\n👾 Found `{blocked}` blocked users.\n👻 Found `{deactivated}` deactivated users."
-    )
+    await lel.edit(f"✅Successfull to `{success}` users.\n❌ Faild to `{failed}` users.\n👾 Found `{blocked}` Blocked users \n👻 Found `{deactivated}` Deactivated users.")
 
-#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Accept Pending Requests on Startup ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Broadcast Forward ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-@app.on_message(filters.command("start") & filters.user(cfg.SUDO))
-async def accept_pending_requests(client, m: Message):
-    dialogs = await client.get_dialogs()
-    for dialog in dialogs:
-        if dialog.chat.type in [enums.ChatType.SUPERGROUP, enums.ChatType.CHANNEL]:
-            try:
-                pending_requests = await client.get_chat_join_requests(dialog.chat.id)
-                for request in pending_requests:
-                    await client.approve_chat_join_request(dialog.chat.id, request.user.id)
-                    await client.send_message(request.user.id, f"**Hello {request.user.mention}!\nWelcome to {dialog.chat.title}**")
-                    add_user(request.user.id)
-                    add_group(dialog.chat.id)
-            except Exception as e:
-                print(f"Error while processing pending requests for {dialog.chat.title}: {e}")
+@app.on_message(filters.command("fcast") & filters.user(cfg.SUDO))
+async def fcast(_, m : Message):
+    allusers = users
+    lel = await m.reply_text("`⚡️ Processing...`")
+    success = 0
+    failed = 0
+    deactivated = 0
+    blocked = 0
+    for usrs in allusers.find():
+        try:
+            userid = usrs["user_id"]
+            #print(int(userid))
+            if m.command[0] == "fcast":
+                await m.reply_to_message.forward(int(userid))
+            success +=1
+        except FloodWait as ex:
+            await asyncio.sleep(ex.value)
+            if m.command[0] == "fcast":
+                await m.reply_to_message.forward(int(userid))
+        except errors.InputUserDeactivated:
+            deactivated +=1
+            remove_user(userid)
+        except errors.UserIsBlocked:
+            blocked +=1
+        except Exception as e:
+            print(e)
+            failed +=1
+
+    await lel.edit(f"✅Successfull to `{success}` users.\n❌ Faild to `{failed}` users.\n👾 Found `{blocked}` Blocked users \n👻 Found `{deactivated}` Deactivated users.")
 
 print("I'm Alive Now!")
 app.run()
