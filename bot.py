@@ -132,11 +132,14 @@ async def broadcast(client, m: Message):
     message_text = m.text.split(maxsplit=1)[1]
     success = 0
     fail = 0
-    for user_id in users():
+    user_list = users()  # Retrieve user IDs
+
+    for user_id in user_list:
         try:
             await client.send_message(user_id, message_text)
             success += 1
-        except Exception:
+        except Exception as e:
+            print(f"Failed to send message to {user_id}: {e}")
             fail += 1
 
     await m.reply(f"Broadcast completed.\n\n✅ Success: {success}\n❌ Failures: {fail}")
