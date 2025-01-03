@@ -3,7 +3,7 @@ from pymongo import MongoClient
 # Connect to MongoDB
 client = MongoClient("mongodb+srv://ayanosuvii0925:subhichiku123@cluster0.uw8yxkl.mongodb.net/mydatabase")  # Replace with your MongoDB URI
 db = client["free_request_accepter_bot"]  # Replace with your database name
-
+db = client["main"]
 # Collections for users and groups
 user_collection = db["users"]  # Collection for users
 group_collection = db["groups"]  # Collection for groups
