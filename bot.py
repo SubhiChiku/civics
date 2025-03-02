@@ -95,15 +95,17 @@ async def chk(client, cb: CallbackQuery):
 
 @app.on_message(filters.command("users") & filters.user(cfg.SUDO))
 async def dbtool(client, m: Message):
-    user_count = len(all_users())
-    group_count = len(all_groups())
+    user_count = all_users()  # No need to use len(), it's already an integer
+    group_count = all_groups()  # Same here
     total_count = user_count + group_count
+    
     await m.reply_text(f"""
 🍀 **Chats Stats** 🍀
 🙋‍♂️ Users: `{user_count}`
 👥 Groups: `{group_count}`
 🚧 Total users & groups: `{total_count}`
     """)
+
 
 #━━━━━━━━━━━━━━━━━━━━━━━━━━ Broadcast ━━━━━━━━━━━━━━━━━━━━━━━━━━
 
